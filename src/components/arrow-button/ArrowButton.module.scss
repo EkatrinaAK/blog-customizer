@@ -11,10 +11,16 @@
 	background-color: #000000;
 	border-right: 1px;
 	transition: transform 0.5s ease;
+	cursor: pointer;
 }
-
 .container_open {
 	transform: translate(616px);
+}
+.container:hover {
+	background-color:#EEEEEE;
+}
+.container:active {
+	background-color:#D7D7D7;
 }
 
 .arrow {
