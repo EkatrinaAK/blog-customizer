@@ -13,26 +13,18 @@ import {
 	fontFamilyOptions,
 	defaultArticleState,
 	OptionType,
+	ArticleStateType,
 } from '../../constants/articleProps';
-import { Article } from '../article/Article';
 import { Text } from '../text';
 
-export type ArticleStyle = {
-	fontSizeOptions: OptionType;
-	fontFamilyOptions: OptionType;
-	fontColors: OptionType;
-	backgroundColors: OptionType;
-	contentWidthArr: OptionType;
-};
-
 export type ArticleParamsFormProps = {
-	onChange: () => void;
-	onReset: () => void;
+	onChange: (changeStyle: ArticleStateType) => void;
+	onDefault: () => void;
 };
 
 export const ArticleParamsForm = ({
 	onChange,
-	onReset,
+	onDefault,
 }: ArticleParamsFormProps) => {
 	const [size, setSize] = useState(defaultArticleState.fontSizeOption);
 	const [font, setFont] = useState(defaultArticleState.fontFamilyOption);
@@ -41,21 +33,6 @@ export const ArticleParamsForm = ({
 		defaultArticleState.backgroundColor
 	);
 	const [width, setWidth] = useState(defaultArticleState.contentWidth);
-	const hendleCandgeSize = (option: OptionType) => {
-		setSize(option);
-	};
-	const handleChangeFont = (option: OptionType) => {
-		setFont(option);
-	};
-	const handleChangeColor = (option: OptionType) => {
-		setColor(option);
-	};
-	const handleChangeBackground = (option: OptionType) => {
-		setBackground(option);
-	};
-	const handleChangeWidth = (option: OptionType) => {
-		setWidth(option);
-	};
 
 	const sedebarRef = useRef<HTMLDivElement>(null);
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -80,23 +57,44 @@ export const ArticleParamsForm = ({
 		};
 	}, [isSidebarOpen, sedebarRef]);
 
+	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		onChange({
+			fontSizeOption: size,
+			fontFamilyOption: font,
+			fontColor: color,
+			backgroundColor: background,
+			contentWidth: width,
+		});
+		setSidebarOpen (false);
+	};
+
+	const onReset = () => {
+		setSize(defaultArticleState.fontSizeOption);
+		setFont(defaultArticleState.fontFamilyOption);
+		setColor(defaultArticleState.fontColor);
+		setBackground(defaultArticleState.backgroundColor);
+		setWidth(defaultArticleState.contentWidth);
+
+		onDefault();
+		setSidebarOpen (false);
+	};
 
 	return (
 		<>
 			<ArrowButton onClick={toggleSidebar} isOpen={isSidebarOpen} />
-
 			<aside
 				ref={sedebarRef}
 				className={styles.container}
 				style={{ transform: isSidebarOpen ? 'translate(0)' : '' }}>
-				<form className={styles.form}>
+				<form className={styles.form} onSubmit={onSubmit} onReset={onReset}>
 					<Text as='h2' size={31} weight={800} align='left' uppercase>
 						Задайте параметры
 					</Text>
 					<div>
 						<Select
 							selected={font}
-							onChange={handleChangeFont}
+							onChange={setFont}
 							options={fontFamilyOptions}
 							title='Шрифт'
 						/>
@@ -106,7 +104,7 @@ export const ArticleParamsForm = ({
 						<RadioGroup
 							selected={size}
 							name='radio'
-							onChange={hendleCandgeSize}
+							onChange={setSize}
 							options={fontSizeOptions}
 							title='Размер шрифта'
 						/>
@@ -115,7 +113,7 @@ export const ArticleParamsForm = ({
 					<div>
 						<Select
 							selected={color}
-							onChange={handleChangeColor}
+							onChange={setColor}
 							options={fontColors}
 							title='Цвет шрифта'
 						/>
@@ -126,7 +124,7 @@ export const ArticleParamsForm = ({
 					<div>
 						<Select
 							selected={background}
-							onChange={handleChangeBackground}
+							onChange={setBackground}
 							options={backgroundColors}
 							title='Цвет фона'
 						/>
@@ -135,19 +133,15 @@ export const ArticleParamsForm = ({
 					<div>
 						<Select
 							selected={width}
-							onChange={handleChangeWidth}
+							onChange={setWidth}
 							options={contentWidthArr}
 							title='Ширина контента'
 						/>
 					</div>
 
 					<div className={styles.bottomContainer}>
-						<Button
-							title='Сбросить'
-							type='reset'
-							onClick={() => alert('клик на кнопку сбросить')}
-						/>
-						<Button title='Применить' type='submit' onClick={() => ''} />
+						<Button title='Сбросить' type='reset' />
+						<Button title='Применить' type='submit' />
 					</div>
 				</form>
 			</aside>
